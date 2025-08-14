@@ -22,6 +22,12 @@ export default function HomeScreen() {
     console.log('User logged in successfully');
   };
 
+  const handleRegisterSuccess = () => {
+    // User berhasil register dan login, navigasi kembali ke login screen atau home
+    console.log('User registered successfully');
+    setShowRegister(false); // Kembali ke login screen
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -48,7 +54,12 @@ export default function HomeScreen() {
 
   // Jika user belum login, tampilkan form login/register
   if (showRegister) {
-    return <RegisterScreen onNavigateToLogin={handleNavigateToLogin} />;
+    return (
+      <RegisterScreen 
+        onNavigateToLogin={handleNavigateToLogin}
+        onRegisterSuccess={handleRegisterSuccess}
+      />
+    );
   }
 
   return (
