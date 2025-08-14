@@ -1,16 +1,18 @@
+import { useAuth } from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, { useState } from "react";
 import {
-    Alert,
-    Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,28 +20,100 @@ const { width, height } = Dimensions.get("window");
 
 interface RegisterScreenProps {
   onNavigateToLogin?: () => void;
+  onRegisterSuccess?: () => void;
 }
 
-export const RegisterScreen = ({ onNavigateToLogin }: RegisterScreenProps) => {
+export const RegisterScreen = ({ onNavigateToLogin, onRegisterSuccess }: RegisterScreenProps) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const { signUpWithEmail, signInWithGoogle } = useAuth();
+
+  const handleSubmit = async () => {
     if (!email || !username || !password || !confirmPassword) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
+    
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
-    // Handle registration logic here
-    console.log("Registration attempt:", { email, username, password });
-    Alert.alert("Register", `Attempting to register with: ${email}`);
+
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters long");
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await signUpWithEmail(email, password);
+      
+      if (result.success) {
+        Alert.alert(
+          "Success", 
+          "Registration successful! Welcome to ZEKO!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                if (onRegisterSuccess) {
+                  onRegisterSuccess();
+                }
+              }
+            }
+          ]
+        );
+      } else {
+        Alert.alert("Registration Failed", result.error || "An error occurred during registration");
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    setIsLoading(true);
+    try {
+      const result = await signInWithGoogle();
+      
+      if (result.success) {
+        Alert.alert(
+          "Success", 
+          "Google sign-up successful! Welcome to ZEKO!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                if (onRegisterSuccess) {
+                  onRegisterSuccess();
+                }
+              }
+            }
+          ]
+        );
+      } else {
+        Alert.alert("Google Sign-Up Failed", result.error || "An error occurred during Google sign-up");
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Google sign-up failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogin = () => {
@@ -175,10 +249,43 @@ export const RegisterScreen = ({ onNavigateToLogin }: RegisterScreenProps) => {
 
             {/* Sign Up Button */}
             <TouchableOpacity
-              style={styles.signUpButton}
+              style={[
+                styles.signUpButton,
+                isLoading && styles.buttonDisabled
+              ]}
               onPress={handleSubmit}
+              disabled={isLoading}
             >
-              <Text style={styles.signUpButtonText}>Sign Up</Text>
+              {isLoading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <Text style={styles.signUpButtonText}>Registering...</Text>
+                </View>
+              ) : (
+                <Text style={styles.signUpButtonText}>Sign Up</Text>
+              )}
+            </TouchableOpacity>
+
+            {/* Google Sign Up Button */}
+            <TouchableOpacity
+              style={[
+                styles.googleButton,
+                isLoading && styles.buttonDisabled
+              ]}
+              onPress={handleGoogleSignUp}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="small" color="#0377DD" />
+                  <Text style={styles.googleButtonText}>Signing up...</Text>
+                </View>
+              ) : (
+                <View style={styles.googleButtonContent}>
+                  <Ionicons name="logo-google" size={20} color="#0377DD" style={styles.googleIcon} />
+                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                </View>
+              )}
             </TouchableOpacity>
 
             {/* Login Link */}
@@ -289,6 +396,44 @@ const styles = StyleSheet.create({
   signUpButtonText: {
     fontSize: Math.min(16, width * 0.04),
     color: "#FFFFFF",
+    fontWeight: "600",
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleButton: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 25,
+    paddingVertical: height > 700 ? 16 : 12,
+    alignItems: "center",
+    marginBottom: height > 700 ? 20 : 15,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  googleButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleIcon: {
+    marginRight: 8,
+  },
+  googleButtonText: {
+    fontSize: Math.min(16, width * 0.04),
+    color: "#0377DD",
     fontWeight: "600",
   },
   loginContainer: {
