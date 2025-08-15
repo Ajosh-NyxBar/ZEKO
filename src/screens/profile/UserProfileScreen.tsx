@@ -253,6 +253,11 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ onBack }) => {
 
   const renderProfileHeader = () => (
     <View style={styles.profileHeader}>
+      {onBack && (
+        <TouchableOpacity style={styles.backButton} onPress={onBack}>
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
+      )}
       <Animated.View
         style={[
           styles.avatarContainer,
@@ -556,6 +561,15 @@ const styles = StyleSheet.create({
   },
   profileHeader: {
     alignItems: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: -30,
+    left: 0,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    zIndex: 1,
   },
   avatarContainer: {
     position: 'relative',
