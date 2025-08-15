@@ -267,26 +267,6 @@ export const RegisterScreen = ({ onNavigateToLogin, onRegisterSuccess }: Registe
             </TouchableOpacity>
 
             {/* Google Sign Up Button */}
-            <TouchableOpacity
-              style={[
-                styles.googleButton,
-                isLoading && styles.buttonDisabled
-              ]}
-              onPress={handleGoogleSignUp}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="small" color="#0377DD" />
-                  <Text style={styles.googleButtonText}>Signing up...</Text>
-                </View>
-              ) : (
-                <View style={styles.googleButtonContent}>
-                  <Ionicons name="logo-google" size={20} color="#0377DD" style={styles.googleIcon} />
-                  <Text style={styles.googleButtonText}>Continue with Google</Text>
-                </View>
-              )}
-            </TouchableOpacity>
 
             {/* Login Link */}
             <View style={styles.loginContainer}>

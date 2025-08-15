@@ -1,12 +1,16 @@
-import { AuthStatus } from '@/components/AuthStatus';
 import { LoginScreen } from '@/components/LoginScreen';
 import { RegisterScreen } from '@/components/RegisterScreen';
+import { WelcomeScreen } from '@/components/WelcomeScreen';
 import { useAuth } from '@/hooks/useAuth';
+import { MainMenuScreen } from '@/src/screens/MainMenuScreen';
+import { SpeechTrainingScreen } from '@/src/screens/training/SpeechTrainingScreen';
 import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   const [showRegister, setShowRegister] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [currentScreen, setCurrentScreen] = useState<'main' | 'speech-training' | 'storytelling' | 'singing' | 'games' | 'progress' | 'emotion-tracker'>('main');
   const { user, loading } = useAuth();
 
   const handleNavigateToRegister = () => {
@@ -15,6 +19,18 @@ export default function HomeScreen() {
 
   const handleNavigateToLogin = () => {
     setShowRegister(false);
+  };
+
+  const handleGetStarted = () => {
+    setShowWelcome(false);
+  };
+
+  const handleNavigateToFeature = (feature: string) => {
+    setCurrentScreen(feature as any);
+  };
+
+  const handleBackToMain = () => {
+    setCurrentScreen('main');
   };
 
   const handleLoginSuccess = () => {
@@ -37,37 +53,56 @@ export default function HomeScreen() {
     );
   }
 
-  // Jika user sudah login, tampilkan halaman utama
+  // Jika user sudah login, tampilkan aplikasi utama
   if (user) {
-    return (
-      <View style={styles.container}>
-        <AuthStatus />
-        <View style={styles.contentContainer}>
-          <Text style={styles.welcomeTitle}>Welcome to ZEKO!</Text>
-          <Text style={styles.welcomeSubtitle}>
-            You are successfully logged in with Firebase Authentication.
-          </Text>
-        </View>
-      </View>
-    );
+    // Render different screens based on currentScreen state
+    switch (currentScreen) {
+      case 'speech-training':
+        return <SpeechTrainingScreen onBack={handleBackToMain} />;
+      case 'storytelling':
+        // TODO: Implement Storytelling screen
+        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+      case 'singing':
+        // TODO: Implement Singing screen
+        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+      case 'games':
+        // TODO: Implement Games screen
+        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+      case 'progress':
+        // TODO: Implement Progress screen
+        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+      case 'emotion-tracker':
+        // TODO: Implement Emotion Tracker screen
+        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+      default:
+        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+    }
   }
 
-  // Jika user belum login, tampilkan form login/register
-  if (showRegister) {
+  // Jika user belum login, tampilkan welcome screen atau form login/register
+  if (!user) {
+    if (showWelcome) {
+      return <WelcomeScreen onGetStarted={handleGetStarted} />;
+    }
+
+    if (showRegister) {
+      return (
+        <RegisterScreen 
+          onNavigateToLogin={handleNavigateToLogin}
+          onRegisterSuccess={handleRegisterSuccess}
+        />
+      );
+    }
+
     return (
-      <RegisterScreen 
-        onNavigateToLogin={handleNavigateToLogin}
-        onRegisterSuccess={handleRegisterSuccess}
+      <LoginScreen 
+        onNavigateToRegister={handleNavigateToRegister}
+        onLoginSuccess={handleLoginSuccess}
       />
     );
   }
 
-  return (
-    <LoginScreen 
-      onNavigateToRegister={handleNavigateToRegister}
-      onLoginSuccess={handleLoginSuccess}
-    />
-  );
+  return null;
 }
 
 const styles = StyleSheet.create({

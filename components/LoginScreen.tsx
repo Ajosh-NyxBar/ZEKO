@@ -50,6 +50,22 @@ export const LoginScreen = ({ onNavigateToRegister, onLoginSuccess }: LoginScree
   };
 
   const handleGoogleLogin = async () => {
+    // Show info for Expo Go users
+    if (Platform.OS !== 'web') {
+      Alert.alert(
+        "Google Sign-In Info", 
+        "Google Sign-In works best with a development build. In Expo Go, it may have limitations. Try using email/password for testing.",
+        [
+          { text: "Use Email/Password", style: "cancel" },
+          { text: "Try Google Sign-In", onPress: () => performGoogleSignIn() }
+        ]
+      );
+    } else {
+      performGoogleSignIn();
+    }
+  };
+
+  const performGoogleSignIn = async () => {
     const result = await signInWithGoogle();
     
     if (result.success) {

@@ -1,13 +1,13 @@
 import { auth } from '@/config/firebase';
 import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithCredential,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  User
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    signInWithCredential,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+    User
 } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
@@ -40,6 +40,10 @@ export const useAuth = () => {
     if (GoogleSignin && Platform.OS !== 'web') {
       GoogleSignin.configure({
         webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'your-web-client-id-here',
+        // Add additional configuration for better Expo Go support
+        forceCodeForRefreshToken: true,
+        offlineAccess: false,
+        hostedDomain: '', // specify a domain if needed
       });
     }
 
@@ -90,18 +94,36 @@ export const useAuth = () => {
       } else {
         // Use react-native-google-signin for native platforms
         if (!GoogleSignin) {
-          throw new Error('Google Sign In is not available for this platform');
+          throw new Error('Google Sign In is not available for this platform. Please use a development build or physical device.');
         }
         
-        // Check if device supports Google Play
-        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+        // Check if Google Play Services is available (Android only)
+        try {
+          await GoogleSignin.hasPlayServices({ 
+            showPlayServicesUpdateDialog: true,
+            autoResolve: true 
+          });
+        } catch (playServicesError: any) {
+          if (Platform.OS === 'android') {
+            throw new Error('Google Play Services not available. Please update Google Play Services or use a physical device.');
+          }
+        }
+        
+        // Sign out any existing Google session first
+        try {
+          await GoogleSignin.signOut();
+        } catch (signOutError) {
+          // Ignore sign out errors, user might not be signed in
+        }
         
         // Get the user's ID token
         const signInResult = await GoogleSignin.signIn();
-        const idToken = signInResult.data?.idToken;
+        
+        // Handle different response formats
+        const idToken = signInResult.data?.idToken || signInResult.idToken;
         
         if (!idToken) {
-          throw new Error('Failed to get ID token from Google Sign-In');
+          throw new Error('Failed to get ID token from Google Sign-In. Please try again.');
         }
         
         // Create a Google credential with the token
@@ -115,12 +137,24 @@ export const useAuth = () => {
     } catch (error: any) {
       let errorMessage = 'Google sign-in failed';
       
+      console.log('Google Sign-In Error:', error); // For debugging
+      
       if (error.code === 'auth/network-request-failed') {
-        errorMessage = 'Network error. Please check your connection.';
+        errorMessage = 'Network error. Please check your internet connection.';
       } else if (error.code === 'auth/too-many-requests') {
         errorMessage = 'Too many failed attempts. Please try again later.';
       } else if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = 'Sign-in was cancelled.';
+        errorMessage = 'Sign-in was cancelled by user.';
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMessage = 'Invalid Google credentials. Please try again.';
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
+        errorMessage = 'An account already exists with this email using a different sign-in method.';
+      } else if (error.code === 'SIGN_IN_CANCELLED') {
+        errorMessage = 'Google sign-in was cancelled.';
+      } else if (error.code === 'IN_PROGRESS') {
+        errorMessage = 'Google sign-in is already in progress.';
+      } else if (error.code === 'PLAY_SERVICES_NOT_AVAILABLE') {
+        errorMessage = 'Google Play Services not available. Use a physical device or development build.';
       } else if (error.message) {
         errorMessage = error.message;
       }
