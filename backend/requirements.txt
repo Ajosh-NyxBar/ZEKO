@@ -14,15 +14,17 @@ google-cloud-speech==2.21.0
 google-cloud-texttospeech==2.16.3
 google-cloud-language==2.11.1
 
-# Audio Processing
+# Machine Learning & AI Models
+tensorflow==2.15.0
+scikit-learn==1.3.2
+joblib==1.3.2
+matplotlib==3.7.2
+
+# Audio Processing & Feature Extraction
 librosa==0.10.1
 soundfile==0.12.1
 numpy==1.24.3
 scipy==1.11.4
-
-# Machine Learning
-tensorflow==2.15.0
-scikit-learn==1.3.2
 
 # HTTP Client
 httpx==0.25.2
