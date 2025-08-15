@@ -1,17 +1,13 @@
-from fastapi import FastAPI, HTTPExc# Include routers
-app.include_router(speech.router, prefix="/api/speech", tags=["Speech Training"])
-# TODO: Add other routers as they are created
-# app.include_router(emotion.router, prefix="/api/emotion", tags=["Emotion Detection"])
-# app.include_router(progress.router, prefix="/api/progress", tags=["User Progress"])
-# app.include_router(gamification.router, prefix="/api/gamification", tags=["Gamification"])n
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from datetime import datetime
 import uvicorn
 import os
 from dotenv import load_dotenv
 
 # Import routers
-from routers import speech
+from routers import speech, emotion, progress, gamification
 
 # Load environment variables
 load_dotenv()
@@ -40,20 +36,10 @@ app.add_middleware(
 )
 
 # Include routers
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
-import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-from routers import speech
-# TODO: Add other routers as they are created
-# app.include_router(emotion.router, prefix="/api/emotion", tags=["Emotion Detection"])
-# app.include_router(progress.router, prefix="/api/progress", tags=["User Progress"])
-# app.include_router(gamification.router, prefix="/api/gamification", tags=["Gamification"])
+app.include_router(speech.router, prefix="/api/speech", tags=["Speech Training"])
+app.include_router(emotion.router, prefix="/api/emotion", tags=["Emotion Detection"])
+app.include_router(progress.router, prefix="/api/progress", tags=["User Progress"])
+app.include_router(gamification.router, prefix="/api/gamification", tags=["Gamification"])
 
 # Health check endpoint
 @app.get("/")

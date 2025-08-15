@@ -56,7 +56,10 @@ async def speech_to_text(
         
         # Save uploaded audio temporarily
         temp_filename = generate_unique_filename(audio_file.filename)
-        temp_path = f"/tmp/{temp_filename}"
+        temp_path = os.path.join(os.getcwd(), "tmp", temp_filename)
+        
+        # Ensure tmp directory exists
+        os.makedirs(os.path.dirname(temp_path), exist_ok=True)
         
         async with aiofiles.open(temp_path, 'wb') as f:
             content = await audio_file.read()
@@ -135,7 +138,10 @@ async def text_to_speech(request: TextToSpeechRequest):
         
         # Save audio to temporary file
         temp_filename = f"tts_{generate_unique_filename('audio.mp3')}"
-        temp_path = f"/tmp/{temp_filename}"
+        temp_path = os.path.join(os.getcwd(), "tmp", temp_filename)
+        
+        # Ensure tmp directory exists
+        os.makedirs(os.path.dirname(temp_path), exist_ok=True)
         
         async with aiofiles.open(temp_path, 'wb') as f:
             await f.write(audio_content)
@@ -165,7 +171,10 @@ async def analyze_pronunciation_detailed(
         
         # Save uploaded audio temporarily
         temp_filename = generate_unique_filename(audio_file.filename)
-        temp_path = f"/tmp/{temp_filename}"
+        temp_path = os.path.join(os.getcwd(), "tmp", temp_filename)
+        
+        # Ensure tmp directory exists
+        os.makedirs(os.path.dirname(temp_path), exist_ok=True)
         
         async with aiofiles.open(temp_path, 'wb') as f:
             content = await audio_file.read()

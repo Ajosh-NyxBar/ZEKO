@@ -50,15 +50,19 @@ class GoogleCloudService:
         except Exception as e:
             logger.error(f"Failed to initialize Google Cloud clients: {str(e)}")
     
-    def speech_to_text(self, audio_content: bytes, language_code: str = "id-ID") -> Optional[str]:
+    def speech_to_text(self, audio_path: str, language_code: str = "id-ID") -> Dict[str, Any]:
         """
         Convert speech audio to text using Google Cloud Speech-to-Text
         """
         if not self.speech_client:
             logger.error("Speech client not initialized")
-            return None
+            return {"text": "", "confidence": 0.0}
         
         try:
+            # Read audio file
+            with open(audio_path, 'rb') as audio_file:
+                audio_content = audio_file.read()
+            
             # Configure audio settings
             audio = speech.RecognitionAudio(content=audio_content)
             config = speech.RecognitionConfig(
@@ -80,14 +84,14 @@ class GoogleCloudService:
                 confidence = result.alternatives[0].confidence
                 
                 logger.info(f"Speech recognition successful. Confidence: {confidence}")
-                return transcript
+                return {"text": transcript, "confidence": confidence}
             else:
                 logger.warning("No speech recognized")
-                return None
+                return {"text": "", "confidence": 0.0}
                 
         except Exception as e:
             logger.error(f"Speech-to-text error: {str(e)}")
-            return None
+            return {"text": "", "confidence": 0.0}
     
     def text_to_speech(self, text: str, language_code: str = "id-ID", 
                       voice_name: str = "id-ID-Standard-A", speed: float = 1.0) -> Optional[bytes]:
