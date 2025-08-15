@@ -4,12 +4,17 @@ import aiofiles
 import os
 from typing import Dict, List, Optional
 import logging
+from datetime import datetime
 
 from services.firebase import firebase_service
 from utils.helpers import validate_audio_file, generate_unique_filename
+from ai_models.emotion_model import EmotionDetectionModel, create_mock_emotion_prediction
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+# Initialize emotion detection model
+emotion_model = EmotionDetectionModel()
 
 # Pydantic models
 class EmotionDetectionRequest(BaseModel):
@@ -55,8 +60,32 @@ async def detect_emotion(
             await f.write(content)
         
         # TODO: Implement actual emotion detection ML model
-        # For now, return simulated emotion detection
-        emotion_result = simulate_emotion_detection(temp_path)
+        # For now, use mock prediction or try to use the model if available
+        try:
+            if emotion_model.is_trained:
+                emotion_result = emotion_model.predict(temp_path)
+                # Convert to expected format
+                emotion_result = {
+                    "emotion": emotion_result["predicted_emotion"],
+                    "confidence": emotion_result["confidence"],
+                    "emotions_breakdown": emotion_result["emotion_probabilities"],
+                    "recommendation": emotion_model.get_emotion_recommendation(
+                        emotion_result["predicted_emotion"], 
+                        emotion_result["confidence"]
+                    ),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            else:
+                # Use mock prediction
+                emotion_result = create_mock_emotion_prediction(bias_positive=True)
+                emotion_result["recommendation"] = emotion_model.get_emotion_recommendation(
+                    emotion_result["predicted_emotion"],
+                    emotion_result["confidence"]
+                )
+                emotion_result["timestamp"] = datetime.utcnow().isoformat()
+        except Exception as model_error:
+            logger.warning(f"AI model failed, using fallback: {model_error}")
+            emotion_result = simulate_emotion_detection(temp_path)
         
         # Save emotion data to Firebase
         await firebase_service.save_emotion_data(

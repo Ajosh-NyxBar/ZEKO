@@ -4,12 +4,20 @@ import aiofiles
 import os
 from typing import Dict, Any
 from pydantic import BaseModel
+import logging
 
 from services.google_cloud import google_cloud_service
 from services.firebase import firebase_service
 from utils.helpers import validate_audio_file, generate_unique_filename
+from ai_models.speech_model import SpeechRecognitionModel, quick_speech_analysis
+from ai_models.adaptive_learning import AdaptiveLearningModel, create_default_user_profile
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+# Initialize AI models
+speech_model = SpeechRecognitionModel()
+adaptive_learning = AdaptiveLearningModel()
 
 # Pydantic models for request/response
 class SpeechToTextRequest(BaseModel):

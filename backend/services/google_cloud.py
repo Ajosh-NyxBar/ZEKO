@@ -161,3 +161,19 @@ class GoogleCloudService:
 
 # Global instance
 google_cloud_service = GoogleCloudService()
+
+def get_speech_client():
+    """Get Speech-to-Text client"""
+    if google_cloud_service.speech_client:
+        return google_cloud_service.speech_client
+    else:
+        logger.warning("Speech client not initialized")
+        return None
+
+def get_tts_client():
+    """Get Text-to-Speech client"""
+    if google_cloud_service.tts_client:
+        return google_cloud_service.tts_client
+    else:
+        logger.warning("TTS client not initialized")
+        return None
