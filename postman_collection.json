@@ -1,0 +1,493 @@
+{
+  "info": {
+    "_postman_id": "zeko-speech-api-collection",
+    "name": "ZEKO Speech Training API",
+    "description": "Complete API collection for ZEKO speech training application with Indonesian speech recognition and synthesis",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "zeko-team"
+  },
+  "item": [
+    {
+      "name": "🏥 Health & Status",
+      "item": [
+        {
+          "name": "Root Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains message\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql(\"ZEKO Speech Training API\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Basic health check to verify API is running"
+          },
+          "response": []
+        },
+        {
+          "name": "Detailed Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Health status is included\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "    pm.expect(jsonData).to.have.property('services');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Detailed health check showing service status"
+          },
+          "response": []
+        }
+      ],
+      "description": "Health check endpoints to verify API status"
+    },
+    {
+      "name": "🎤 Speech Processing",
+      "item": [
+        {
+          "name": "Text to Speech (TTS)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains audio data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('audio_url');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Halo, anak-anak! Mari belajar mengucapkan kata mama dengan benar.\",\n  \"language_code\": \"id-ID\",\n  \"voice_name\": \"id-ID-Standard-A\",\n  \"speed\": 0.9,\n  \"user_id\": \"{{user_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/speech/text-to-speech",
+              "host": ["{{base_url}}"],
+              "path": ["api", "speech", "text-to-speech"]
+            },
+            "description": "Convert Indonesian text to speech audio"
+          },
+          "response": []
+        },
+        {
+          "name": "Speech to Text (STT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains transcript\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('transcript');",
+                  "    pm.expect(jsonData).to.have.property('confidence');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "audio_file",
+                  "type": "file",
+                  "src": "/path/to/audio/sample.mp3",
+                  "description": "Upload audio file (.mp3, .wav, .m4a, .ogg, .flac)"
+                },
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "target_word",
+                  "value": "mama",
+                  "type": "text",
+                  "description": "Word that child should pronounce"
+                },
+                {
+                  "key": "language_code",
+                  "value": "id-ID",
+                  "type": "text"
+                },
+                {
+                  "key": "difficulty_level",
+                  "value": "easy",
+                  "type": "text",
+                  "description": "easy, medium, or hard"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/speech/speech-to-text",
+              "host": ["{{base_url}}"],
+              "path": ["api", "speech", "speech-to-text"]
+            },
+            "description": "Convert audio speech to text with pronunciation scoring"
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Pronunciation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Analysis contains scoring\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('similarity_score');",
+                  "    pm.expect(jsonData).to.have.property('overall_score');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "audio_file",
+                  "type": "file",
+                  "src": "/path/to/audio/pronunciation.mp3"
+                },
+                {
+                  "key": "expected_text",
+                  "value": "bapa",
+                  "type": "text",
+                  "description": "Expected pronunciation text"
+                },
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/speech/analyze-pronunciation",
+              "host": ["{{base_url}}"],
+              "path": ["api", "speech", "analyze-pronunciation"]
+            },
+            "description": "Detailed pronunciation analysis with feedback"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Practice Words",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains word list\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('words');",
+                  "    pm.expect(jsonData.words).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/speech/practice-words?difficulty=easy&category=family&count=5&age=6",
+              "host": ["{{base_url}}"],
+              "path": ["api", "speech", "practice-words"],
+              "query": [
+                {
+                  "key": "difficulty",
+                  "value": "easy",
+                  "description": "easy, medium, hard"
+                },
+                {
+                  "key": "category",
+                  "value": "family",
+                  "description": "family, animals, colors, school, food"
+                },
+                {
+                  "key": "count",
+                  "value": "5",
+                  "description": "Number of words to return"
+                },
+                {
+                  "key": "age",
+                  "value": "6",
+                  "description": "Child's age for appropriate content"
+                }
+              ]
+            },
+            "description": "Get age-appropriate practice words"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Voices",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains voices\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('voices');",
+                  "    pm.expect(jsonData.voices).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/speech/voices?language_code=id-ID",
+              "host": ["{{base_url}}"],
+              "path": ["api", "speech", "voices"],
+              "query": [
+                {
+                  "key": "language_code",
+                  "value": "id-ID",
+                  "description": "Language code for voice filtering"
+                }
+              ]
+            },
+            "description": "Get list of available TTS voices"
+          },
+          "response": []
+        }
+      ],
+      "description": "Speech processing endpoints for TTS, STT, and analysis"
+    },
+    {
+      "name": "🧪 Test Scenarios",
+      "item": [
+        {
+          "name": "TTS - Child Friendly Voice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Wah, hebat sekali! Kamu bisa mengucapkan kata mama dengan sangat baik. Mari coba kata papa sekarang!\",\n  \"language_code\": \"id-ID\",\n  \"voice_name\": \"id-ID-Standard-A\",\n  \"speed\": 0.8,\n  \"user_id\": \"{{user_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/speech/text-to-speech",
+              "host": ["{{base_url}}"],
+              "path": ["api", "speech", "text-to-speech"]
+            },
+            "description": "Test TTS with encouraging child-friendly message"
+          },
+          "response": []
+        },
+        {
+          "name": "Practice Words - Animals (Easy)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/speech/practice-words?difficulty=easy&category=animals&count=3&age=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "speech", "practice-words"],
+              "query": [
+                {
+                  "key": "difficulty",
+                  "value": "easy"
+                },
+                {
+                  "key": "category",
+                  "value": "animals"
+                },
+                {
+                  "key": "count",
+                  "value": "3"
+                },
+                {
+                  "key": "age",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Get simple animal words for 5-year-old"
+          },
+          "response": []
+        },
+        {
+          "name": "Error Test - Invalid Audio Format",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "audio_file",
+                  "type": "file",
+                  "src": "/path/to/invalid/file.txt",
+                  "description": "Invalid file format to test error handling"
+                },
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "target_word",
+                  "value": "test",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/speech/speech-to-text",
+              "host": ["{{base_url}}"],
+              "path": ["api", "speech", "speech-to-text"]
+            },
+            "description": "Test error handling with invalid file format"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test scenarios for various use cases and edge cases"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set timestamp for requests",
+          "pm.globals.set('timestamp', new Date().toISOString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test to check response time",
+          "pm.test('Response time is less than 5000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "test-user-123",
+      "type": "string"
+    },
+    {
+      "key": "api_version",
+      "value": "v1",
+      "type": "string"
+    }
+  ]
+}
