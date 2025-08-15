@@ -1,17 +1,21 @@
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+/**
+ * Speech Training Screen for ZEKO
+ * ===============================
+ * 
+ * Interactive speech therapy training interface with real-time AI analysis.
+ * Features emotion detection, pronunciation scoring, and adaptive learning.
+ */
+
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
     Animated,
     Dimensions,
-    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
