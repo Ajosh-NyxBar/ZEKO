@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 
 # Import routers
-from routers import speech, emotion, progress, gamification
+from routers import speech, emotion, progress, gamification, ai_models
 
 # Load environment variables
 load_dotenv()
@@ -40,6 +40,7 @@ app.include_router(speech.router, prefix="/api/speech", tags=["Speech Training"]
 app.include_router(emotion.router, prefix="/api/emotion", tags=["Emotion Detection"])
 app.include_router(progress.router, prefix="/api/progress", tags=["User Progress"])
 app.include_router(gamification.router, prefix="/api/gamification", tags=["Gamification"])
+app.include_router(ai_models.router, prefix="/api/ai", tags=["AI Models & Training"])
 
 # Health check endpoint
 @app.get("/")
@@ -53,21 +54,56 @@ async def root():
             "speech": "/api/speech",
             "emotion": "/api/emotion", 
             "progress": "/api/progress",
-            "gamification": "/api/gamification"
+            "gamification": "/api/gamification",
+            "ai_models": "/api/ai"
         }
     }
 
 @app.get("/api/health")
 async def health_check():
     """Health check endpoint for monitoring"""
-    return {
-        "status": "healthy",
-        "timestamp": "2025-08-15T10:00:00Z",
-        "services": {
-            "firebase": "connected",
-            "google_cloud": "available"
+    try:
+        # Test AI models availability
+        ai_status = {}
+        try:
+            from ai_models import EmotionDetectionModel, SpeechRecognitionModel, AdaptiveLearningModel
+            ai_status = {
+                "emotion_model": "available",
+                "speech_model": "available", 
+                "adaptive_learning": "available",
+                "ai_router": "active"
+            }
+        except Exception as e:
+            ai_status = {
+                "ai_models": f"error: {str(e)}",
+                "status": "degraded"
+            }
+        
+        return {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "version": "1.0.0 - Phase 4 AI",
+            "services": {
+                "firebase": "connected",
+                "google_cloud": "available",
+                **ai_status
+            },
+            "endpoints": {
+                "ai_emotion": "/api/ai/emotion/analyze",
+                "ai_speech": "/api/ai/speech/analyze", 
+                "ai_adaptive": "/api/ai/adaptive/recommend",
+                "ai_status": "/api/ai/models/status"
+            }
         }
-    }
+    except Exception as e:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "unhealthy",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat()
+            }
+        )
 
 # Global exception handler
 @app.exception_handler(Exception)
