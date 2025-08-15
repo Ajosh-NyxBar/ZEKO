@@ -6,16 +6,20 @@
  * Features emotion detection, pronunciation scoring, and adaptive learning.
  */
 
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
     Animated,
     Dimensions,
+    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -184,7 +188,7 @@ export const SpeechTrainingScreen = ({ onBack }: SpeechTrainingProps) => {
         <View style={styles.characterSection}>
           <Animated.View style={[styles.characterContainer, { transform: [{ scale: animationValue }] }]}>
             <Image 
-              source={require('@/assets/images/Imron.png')} 
+              source={require('../../../assets/images/Imron.png')} 
               style={styles.characterImage}
               resizeMode="contain"
             />
