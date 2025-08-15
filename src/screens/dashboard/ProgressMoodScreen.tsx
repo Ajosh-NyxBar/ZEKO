@@ -11,7 +11,6 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { ScreenHeader } from '../../../components/ScreenHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -524,7 +523,15 @@ const ProgressMoodScreen: React.FC<ProgressMoodScreenProps> = ({ onBack }) => {
             },
           ]}
         >
-          <Text style={styles.headerTitle}>📈 Progress & Mood</Text>
+          <View style={styles.headerTop}>
+            {onBack && (
+              <TouchableOpacity style={styles.backButton} onPress={onBack}>
+                <Ionicons name="arrow-back" size={24} color="white" />
+              </TouchableOpacity>
+            )}
+            <Text style={styles.headerTitle}>📈 Progress & Mood</Text>
+            <View style={styles.placeholder} />
+          </View>
           <Text style={styles.headerSubtitle}>
             Lihat perkembangan dan bagikan perasaan kamu!
           </Text>
@@ -567,11 +574,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  backButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  placeholder: {
+    width: 40, // Same width as back button to center the title
+  },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
+    flex: 1,
   },
   headerSubtitle: {
     fontSize: 16,
