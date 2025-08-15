@@ -3,14 +3,19 @@ import { RegisterScreen } from '@/components/RegisterScreen';
 import { WelcomeScreen } from '@/components/WelcomeScreen';
 import { useAuth } from '@/hooks/useAuth';
 import { MainMenuScreen } from '@/src/screens/MainMenuScreen';
-import { SpeechTrainingScreen } from '@/src/screens/training/SpeechTrainingScreen';
+import SpeechTrainingScreen from '@/src/screens/speech/SpeechTrainingScreen';
+import SingingScreen from '@/src/screens/singing/SingingScreen';
+import GamesScreen from '@/src/screens/games/GamesScreen';
+import ProgressMoodScreen from '@/src/screens/dashboard/ProgressMoodScreen';
+import UserProfileScreen from '@/src/screens/profile/UserProfileScreen';
+import StorytellingScreen from '@/src/screens/storytelling/StorytellingScreen';
 import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   const [showRegister, setShowRegister] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
-  const [currentScreen, setCurrentScreen] = useState<'main' | 'speech-training' | 'storytelling' | 'singing' | 'games' | 'progress' | 'emotion-tracker'>('main');
+  const [currentScreen, setCurrentScreen] = useState<'main' | 'speech-training' | 'storytelling' | 'singing' | 'games' | 'progress' | 'profile' | 'emotion-tracker'>('main');
   const { user, loading } = useAuth();
 
   const handleNavigateToRegister = () => {
@@ -60,20 +65,17 @@ export default function HomeScreen() {
       case 'speech-training':
         return <SpeechTrainingScreen onBack={handleBackToMain} />;
       case 'storytelling':
-        // TODO: Implement Storytelling screen
-        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+        return <StorytellingScreen onBack={handleBackToMain} />;
       case 'singing':
-        // TODO: Implement Singing screen
-        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+        return <SingingScreen onBack={handleBackToMain} />;
       case 'games':
-        // TODO: Implement Games screen
-        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+        return <GamesScreen onBack={handleBackToMain} />;
       case 'progress':
-        // TODO: Implement Progress screen
-        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+        return <ProgressMoodScreen onBack={handleBackToMain} />;
+      case 'profile':
+        return <UserProfileScreen onBack={handleBackToMain} />;
       case 'emotion-tracker':
-        // TODO: Implement Emotion Tracker screen
-        return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
+        return <ProgressMoodScreen onBack={handleBackToMain} />;
       default:
         return <MainMenuScreen onNavigateToFeature={handleNavigateToFeature} userName={user.displayName || 'Adik'} />;
     }

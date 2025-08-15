@@ -39,7 +39,11 @@ interface StoryPage {
   emotionTarget?: string;
 }
 
-const StorytellingScreen: React.FC = () => {
+interface StorytellingScreenProps {
+  onBack?: () => void;
+}
+
+const StorytellingScreen: React.FC<StorytellingScreenProps> = ({ onBack }) => {
   const [stories, setStories] = useState<Story[]>([]);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [currentPage, setCurrentPage] = useState(0);

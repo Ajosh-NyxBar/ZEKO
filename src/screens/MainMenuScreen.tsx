@@ -119,7 +119,10 @@ export const MainMenuScreen = ({ onNavigateToFeature, userName = 'Adik' }: MainM
           <Text style={styles.subWelcomeText}>Ayo belajar bersama hari ini!</Text>
         </View>
         
-        <TouchableOpacity style={styles.profileButton}>
+        <TouchableOpacity 
+          style={styles.profileButton}
+          onPress={() => handleFeaturePress('profile')}
+        >
           <Ionicons name="person-circle" size={40} color="#0077DD" />
         </TouchableOpacity>
       </View>
