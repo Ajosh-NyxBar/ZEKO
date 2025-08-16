@@ -3,16 +3,16 @@ import { Audio } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    Animated,
-    Dimensions,
-    Image,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Animated,
+  Dimensions,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -442,6 +442,14 @@ const StorytellingScreen: React.FC<StorytellingScreenProps> = ({ onBack }) => {
         colors={['#667eea', '#764ba2']}
         style={styles.header}
       >
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity 
+            style={styles.testBackButton}
+            onPress={onBack || (() => console.log('Back pressed but no onBack provided'))}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
         <Animated.View 
           style={[
             styles.headerContent,
@@ -482,6 +490,22 @@ const styles = StyleSheet.create({
     height: 140,
     paddingTop: 40,
     paddingHorizontal: 20,
+  },
+  backButtonContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 15,
+    zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 20,
+    padding: 5,
+  },
+  testBackButton: {
+    padding: 10,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerContent: {
     flex: 1,
