@@ -33,9 +33,11 @@ export const BackButton: React.FC<BackButtonProps> = ({
 
 const styles = StyleSheet.create({
   backButton: {
-    padding: 10,
-    marginLeft: 10,
-    marginTop: 10,
-    alignSelf: 'flex-start',
+    padding: 8,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 40,
+    minHeight: 40,
   },
 });
