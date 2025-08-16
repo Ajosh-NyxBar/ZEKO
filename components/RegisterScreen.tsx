@@ -3,27 +3,29 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BackButton } from "./BackButton";
 
 const { width, height } = Dimensions.get("window");
 
 interface RegisterScreenProps {
   onNavigateToLogin?: () => void;
   onRegisterSuccess?: () => void;
+  onBack?: () => void;
 }
 
-export const RegisterScreen = ({ onNavigateToLogin, onRegisterSuccess }: RegisterScreenProps) => {
+export const RegisterScreen = ({ onNavigateToLogin, onRegisterSuccess, onBack }: RegisterScreenProps) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -128,6 +130,7 @@ export const RegisterScreen = ({ onNavigateToLogin, onRegisterSuccess }: Registe
 
   return (
     <SafeAreaView style={styles.container}>
+      {onBack && <BackButton onPress={onBack} color="#0377DD" />}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
